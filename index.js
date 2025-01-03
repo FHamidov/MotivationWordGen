@@ -6,8 +6,15 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const app = express();
 const port = 3000;
 
+// CORS configuration
+const corsOptions = {
+    origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'null'],
+    methods: ['GET'],
+    allowedHeaders: ['Content-Type', 'x-api-key']
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // API key middleware
@@ -39,8 +46,15 @@ app.get('/api/motivation', apiKeyMiddleware, async (req, res) => {
     }
 });
 
+// Test endpoint
 app.get('/api/test', apiKeyMiddleware, (req, res) => {
     res.json({ message: 'API is working!' });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
 app.listen(port, () => {

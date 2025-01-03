@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' http://localhost:3000">
     <title>Daily Motivation</title>
     <style>
         body {
@@ -38,39 +39,115 @@
             cursor: pointer;
             font-size: 1rem;
             transition: transform 0.2s;
+            margin: 0.5rem;
         }
         button:hover {
             transform: scale(1.05);
+        }
+        .error {
+            color: #ff6b6b;
+            margin-top: 1rem;
+        }
+        .api-form {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        input {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            font-size: 1rem;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Daily Motivation</h1>
-        <p id="quote" class="quote">Your daily motivation will appear here...</p>
-        <button onclick="getQuote()">Get New Quote</button>
+        
+        <div id="apiKeyForm" class="api-form">
+            <input type="text" id="apiKeyInput" placeholder="Enter your API key" />
+            <button onclick="setApiKey()">Set API Key</button>
+        </div>
+
+        <div id="quoteSection" class="hidden">
+            <p id="quote" class="quote">Your daily motivation will appear here...</p>
+            <button onclick="getQuote()">Get New Quote</button>
+            <button onclick="resetApiKey()">Change API Key</button>
+        </div>
+
+        <p id="error" class="error"></p>
     </div>
 
     <script>
-        const API_KEY = 'your_custom_api_key_here'; // Replace with your API key
+        let API_KEY = '';
+
+        function setApiKey() {
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            API_KEY = apiKeyInput.value.trim();
+            
+            if (!API_KEY) {
+                document.getElementById('error').textContent = 'Please enter an API key';
+                return;
+            }
+
+            // Hide form and show quote section
+            document.getElementById('apiKeyForm').classList.add('hidden');
+            document.getElementById('quoteSection').classList.remove('hidden');
+            document.getElementById('error').textContent = '';
+
+            // Get first quote
+            getQuote();
+        }
+
+        function resetApiKey() {
+            API_KEY = '';
+            document.getElementById('apiKeyInput').value = '';
+            document.getElementById('apiKeyForm').classList.remove('hidden');
+            document.getElementById('quoteSection').classList.add('hidden');
+            document.getElementById('error').textContent = '';
+            document.getElementById('quote').textContent = 'Your daily motivation will appear here...';
+        }
 
         async function getQuote() {
+            if (!API_KEY) {
+                document.getElementById('error').textContent = 'API key not set';
+                return;
+            }
+
             try {
+                document.getElementById('error').textContent = '';
+                document.getElementById('quote').textContent = 'Loading...';
+                
                 const response = await fetch('http://localhost:3000/api/motivation', {
                     headers: {
                         'x-api-key': API_KEY
                     }
                 });
+
+                if (!response.ok) {
+                    throw new Error('Invalid API key or server error');
+                }
+
                 const data = await response.json();
                 document.getElementById('quote').textContent = data.quote;
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('quote').textContent = 'Failed to load quote. Please try again.';
+                document.getElementById('quote').textContent = 'Your daily motivation will appear here...';
+                document.getElementById('error').textContent = error.message || 'Failed to load quote. Please try again.';
+                
+                if (error.message.includes('Invalid API key')) {
+                    resetApiKey();
+                }
             }
         }
-
-        // Get quote when page loads
-        window.onload = getQuote;
     </script>
 </body>
 </html> 
