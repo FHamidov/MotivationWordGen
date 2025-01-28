@@ -121,9 +121,3 @@ Bütün endpoint'lər (qeydiyyat və giriş xaric) JWT autentifikasiyası tələ
 2. API açarını heç vaxt client tərəfdə açıq şəkildə saxlamayın
 3. Güclü şifrələrdən istifadə edin
 4. Rate limiting tətbiq edin
-
-## Əlaqə
-Hər hansı sual və ya problem yaranarsa, [əlaqə_məlumatları] ilə əlaqə saxlaya bilərsiniz.
-
-## Lisenziya
-Bu layihə [lisenziya_adı] ilə lisenziyalaşdırılıb.
