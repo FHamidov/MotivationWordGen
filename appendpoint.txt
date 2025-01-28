@@ -1,0 +1,26 @@
+POST /api/app/register
+- Register a new user
+- Body: { username, email, password }
+
+POST /api/app/login
+- Login user
+- Body: { email, password }
+- Returns: JWT token
+
+POST /api/app/posts
+- Create a new post
+- Required: Authorization header with JWT token
+- Body: { content }
+
+GET /api/app/posts
+- Get all posts
+- Required: Authorization header with JWT token
+
+POST /api/app/posts/:postId/like
+- Like or unlike a post
+- Required: Authorization header with JWT token
+
+POST /api/app/posts/:postId/comments
+- Add a comment to a post
+- Required: Authorization header with JWT token
+- Body: { content }
